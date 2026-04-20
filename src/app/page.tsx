@@ -6,9 +6,13 @@ import ContactForm from "@/components/ContactForm";
 export const revalidate = 60;
 
 async function getPhotos() {
-  await connectDB();
-  const photos = await Photo.find().sort({ order: 1, createdAt: -1 }).lean();
-  return JSON.parse(JSON.stringify(photos));
+  try {
+    await connectDB();
+    const photos = await Photo.find().sort({ order: 1, createdAt: -1 }).lean();
+    return JSON.parse(JSON.stringify(photos));
+  } catch {
+    return [];
+  }
 }
 
 export default async function Home() {
