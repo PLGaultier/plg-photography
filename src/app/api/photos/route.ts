@@ -6,7 +6,10 @@ import { auth } from "@/lib/auth";
 
 export async function GET() {
   await connectDB();
-  const photos = await Photo.find().sort({ order: 1, createdAt: -1 });
+  const photos = await Photo.find()
+    .select("url filename caption order createdAt")
+    .sort({ order: 1, createdAt: -1 })
+    .lean();
   return NextResponse.json(photos);
 }
 
