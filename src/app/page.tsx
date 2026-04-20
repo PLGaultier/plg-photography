@@ -20,11 +20,7 @@ export default async function Home() {
 
   return (
     <main>
-      <section className="pt-40 pb-16 px-8">
-        <p className="text-xs tracking-[0.3em] uppercase text-neutral-600">Engineer with a lens</p>
-      </section>
-
-      <section className="px-4 sm:px-6 lg:px-8 pb-16">
+      <section className="pt-24 px-4 sm:px-6 lg:px-8 pb-16">
         {photos.length === 0 ? (
           <div className="flex items-center justify-center min-h-[60vh]">
             <p className="text-xs tracking-widest uppercase text-neutral-600">No photos yet</p>
