@@ -14,23 +14,22 @@ export default function PhotoGrid({ photos }: { photos: Photo[] }) {
 
   return (
     <>
-      <div className="columns-1 sm:columns-2 lg:columns-3 gap-1 space-y-1">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-1">
         {photos.map((photo) => (
           <div
             key={photo._id}
-            className="break-inside-avoid cursor-pointer overflow-hidden group"
+            className="cursor-pointer overflow-hidden group relative aspect-[4/5]"
             onClick={() => setSelected(photo)}
           >
-            <div className="relative">
-              <Image
-                src={photo.url}
-                alt={photo.caption ?? ""}
-                width={800}
-                height={600}
-                className="w-full object-cover grayscale hover:grayscale-0 transition-all duration-500"
-                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-              />
-            </div>
+            <Image
+              src={photo.url}
+              alt={photo.caption ?? ""}
+              fill
+              className="object-cover transition-transform duration-500 ease-in-out group-hover:scale-[1.04]"
+              sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+              priority={photos.indexOf(photo) === 0}
+            />
+            <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-500" />
           </div>
         ))}
       </div>
