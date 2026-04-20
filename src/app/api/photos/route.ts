@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from "next/server";
-import { put } from "@vercel/blob";
 import { connectDB } from "@/lib/mongodb";
 import { Photo } from "@/models/Photo";
 import { auth } from "@/lib/auth";
@@ -17,20 +16,11 @@ export async function POST(req: NextRequest) {
   const session = await auth();
   if (!session) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const formData = await req.formData();
-  const file = formData.get("file") as File;
-  const caption = formData.get("caption") as string | null;
-
-  if (!file) return NextResponse.json({ error: "No file" }, { status: 400 });
-
-  const blob = await put(file.name, file, { access: "public" });
+  const { url, filename, caption } = await req.json();
+  if (!url || !filename) return NextResponse.json({ error: "Missing fields" }, { status: 400 });
 
   await connectDB();
-  const photo = await Photo.create({
-    url: blob.url,
-    filename: file.name,
-    caption: caption ?? "",
-  });
+  const photo = await Photo.create({ url, filename, caption: caption ?? "" });
 
   return NextResponse.json(photo, { status: 201 });
 }

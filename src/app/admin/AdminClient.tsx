@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
+import { upload } from "@vercel/blob/client";
 
 interface Photo {
   _id: string;
@@ -24,20 +25,29 @@ export default function AdminClient({ photos: initial }: { photos: Photo[] }) {
     if (!file) return;
 
     setUploading(true);
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("caption", caption);
+    try {
+      const blob = await upload(file.name, file, {
+        access: "public",
+        handleUploadUrl: "/api/photos/upload",
+      });
 
-    const res = await fetch("/api/photos", { method: "POST", body: formData });
-    if (res.ok) {
-      setCaption("");
-      setPreview(null);
-      if (fileRef.current) fileRef.current.value = "";
-      router.refresh();
-      const updated = await fetch("/api/photos").then((r) => r.json());
-      setPhotos(updated);
+      const res = await fetch("/api/photos", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ url: blob.url, filename: file.name, caption }),
+      });
+
+      if (res.ok) {
+        setCaption("");
+        setPreview(null);
+        if (fileRef.current) fileRef.current.value = "";
+        const updated = await fetch("/api/photos").then((r) => r.json());
+        setPhotos(updated);
+        router.refresh();
+      }
+    } finally {
+      setUploading(false);
     }
-    setUploading(false);
   };
 
   const handleDelete = async (id: string) => {
